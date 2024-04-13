@@ -11,6 +11,9 @@ local STATE_ENUM = {
 }
 local State = STATE_ENUM.MENU
 local menu_touch = nil
+local interval_mob = 0;
+local interval_mob_goal = 260
+local index = 0
 
 function love.keypressed(key)
     if State == STATE_ENUM.GAME then
@@ -32,6 +35,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.load()
+    math.randomseed(os.time())
     love.window.setMode(1920, 1080)
     love.window.setTitle("MyLoveFlappy2D")
     love.graphics.setBackgroundColor(0.41, 0.53, 0.97)
@@ -40,7 +44,19 @@ end
 
 function love.update(dt)
     if State == STATE_ENUM.GAME then
+        if (interval_mob == interval_mob_goal) then
+            interval_mob = 0
+            Obstacles.addObstacle()
+        else
+            interval_mob = interval_mob + 1
+        end
         Bird.update(top)
+        if index == 2 then
+            if (interval_mob_goal > 80) then
+                interval_mob_goal = interval_mob_goal - 40
+            end
+            index = 0
+        end
         if keyPressed == "space" then
             if top == 0 then
                 keyPressed = ""
@@ -49,7 +65,7 @@ function love.update(dt)
             end
         end
         Obstacles.move()
-        Bird.collision(Obstacles.list)
+        index = Bird.collision(Obstacles.list)
     elseif State == STATE_ENUM.MENU then
         if menu_touch == "play" then
             Obstacles.addObstacle()

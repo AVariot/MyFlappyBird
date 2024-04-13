@@ -1,14 +1,16 @@
 local Obstacles = {}
 
 Obstacles.list = {}
-Obstacles.speed = 5
+Obstacles.speed = 7
 
 function Obstacles.addObstacle()
-    --                             x, y heigth, width
+    -- x, y heigth, width
+    top_size_y = math.random(200, 400)
+    bot_pos_y = top_size_y + 200
     table.insert(
         Obstacles.list, {
-            {2000, 0, 300, 200},
-            {2000, 1080 - 400, 600, 200},
+            {2000, 0, top_size_y, 200},
+            {2000, bot_pos_y, 1000, 200},
             false
         }
     )

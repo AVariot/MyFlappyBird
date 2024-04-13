@@ -47,6 +47,7 @@ function Bird.collision(obstacles)
             else
                 Bird.point = Bird.point + 1
                 value[3] = true
+                return 1
             end
         end
     end
