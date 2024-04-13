@@ -18,6 +18,13 @@ function Bird.load()
     Bird.flappyBird = love.graphics.newImage("flappy.png")
 end
 
+function Bird.destroyer()
+    Bird.point = 0
+    Bird.is_alive = true
+    Bird.flappyX = 100
+    Bird.flappyy = 100
+end
+
 function Bird.update(top)
     -- Mise à jour de la position et de la hitbox de l'oiseau
     if top == 0 then

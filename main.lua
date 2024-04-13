@@ -40,9 +40,17 @@ function love.load()
     love.window.setTitle("MyLoveFlappy2D")
     love.graphics.setBackgroundColor(0.41, 0.53, 0.97)
     Menu.load()
+    Bird.load()
+    Obstacles.addObstacle()
 end
 
 function love.update(dt)
+    if Bird.is_alive == false then
+        Bird.destroyer()
+        Obstacles.destroyer()
+        menu_touch = nil
+        State = STATE_ENUM.MENU
+    end
     if State == STATE_ENUM.GAME then
         if (interval_mob == interval_mob_goal) then
             interval_mob = 0
@@ -68,8 +76,6 @@ function love.update(dt)
         index = Bird.collision(Obstacles.list)
     elseif State == STATE_ENUM.MENU then
         if menu_touch == "play" then
-            Obstacles.addObstacle()
-            Bird.load()
             State = STATE_ENUM.GAME
         elseif menu_touch == "quit" then
             love.event.quit()
