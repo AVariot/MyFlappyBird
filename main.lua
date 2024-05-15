@@ -1,97 +1,98 @@
-local Bird = require("bird")
-local Obstacles = require("obstacles")
-local Menu = require("menu")
+function main()
+	print("Hello world")
+end
+local college = love.graphics.newImage("assets/collége.png")
+local crampte = love.graphics.newImage("assets/crampté-man.png")
 
-local keyPressed
-local top = 0
-local STATE_ENUM = {
-    MENU = 1,
-    GAME = 2,
-    SETTINGS = 3
+local cramptePos = {
+	x = 100,
+	y = 500
 }
-local State = STATE_ENUM.MENU
-local menu_touch = nil
-local interval_mob = 0;
-local interval_mob_goal = 260
-local index = 0
+local crampteHitbox = {
+	width = 98,
+	height = 114
+}
 
-function love.keypressed(key)
-    if State == STATE_ENUM.GAME then
-        if key == "space" then
-            keyPressed = "space"
-            top = 20
-        elseif key == "h" then
-            Bird.print_hitbox = not Bird.print_hitbox
-        end
-    end
+local iphone = love.graphics.newImage("assets/IPhone.png")
+local iphoneHitbox = {
+	width = 50,
+	height = 70
+}
+math.randomseed(os.time())
+local iphones_pos = {
+	{x = math.random(1920), y = math.random(1080)}
+}
+for i = 0, 500 do
+	table.insert(iphones_pos, {x = math.random(1920), y = math.random(1080)})
 end
 
-function love.mousepressed(x, y, button, istouch, presses)
-    if State == STATE_ENUM.MENU then
-        if button == 1 then
-            menu_touch = Menu.update(x, y)
-        end
-    end
+local floor = {
+	{x = 0, y = 1000},
+	{x = 1980, y = 950}
+}
+local quoicoubeh = love.sound.newSoundData( "assets/quoicoubeh.wav" )
+local quoicousource = love.audio.newSource(quoicoubeh)
+quoicousource.play(quoicousource)
+
+-- Lib
+
+local function checkColision(pos1, hitbox1, pos2, hitbox2)
+	if pos1.x < pos2.x + hitbox2.width then
+		if pos1.x + hitbox1.width > pos2.x then
+			if pos1.y < pos2.y + hitbox2.height then
+				if hitbox1.height + pos1.y > pos2.y then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+-- Love
+function love.keypressed(key)
+	if key == 'z' then
+		cramptePos.y = cramptePos.y - 100
+	end
+	if key == 's' then
+		cramptePos.y = cramptePos.y + 100
+	end
+
+	if key == 'd' then
+		cramptePos.x = cramptePos.x + 50
+	end
+	if key == 'q' then
+		cramptePos.x = cramptePos.x - 50
+	end
+
+
 end
 
 function love.load()
-    math.randomseed(os.time())
-    love.window.setMode(1920, 1080)
-    love.window.setTitle("MyLoveFlappy2D")
-    love.graphics.setBackgroundColor(0.41, 0.53, 0.97)
-    Menu.load()
-    Bird.load()
-    Obstacles.addObstacle()
+	love.window.setMode(1920, 1080)
+    love.window.setTitle("Apagneur")
+	love.graphics.setNewFont(12)
 end
 
 function love.update(dt)
-    if Bird.is_alive == false then
-        Bird.destroyer()
-        Obstacles.destroyer()
-        menu_touch = nil
-        State = STATE_ENUM.MENU
-    end
-    if State == STATE_ENUM.GAME then
-        if (interval_mob == interval_mob_goal) then
-            interval_mob = 0
-            Obstacles.addObstacle()
-        else
-            interval_mob = interval_mob + 1
-        end
-        Bird.update(top)
-        if index == 2 then
-            if (interval_mob_goal > 80) then
-                interval_mob_goal = interval_mob_goal - 40
-            end
-            index = 0
-        end
-        if keyPressed == "space" then
-            if top == 0 then
-                keyPressed = ""
-            else
-                top = top - 2
-            end
-        end
-        Obstacles.move()
-        index = Bird.collision(Obstacles.list)
-    elseif State == STATE_ENUM.MENU then
-        if menu_touch == "play" then
-            State = STATE_ENUM.GAME
-        elseif menu_touch == "quit" then
-            love.event.quit()
-        end
-    end
+	local index = 1
+	for type, current in ipairs(iphones_pos) do
+		if (checkColision(cramptePos, crampteHitbox, current, iphoneHitbox) == true) then
+			table.remove(iphones_pos, index)
+		end
+		index = index + 1
+	end
 end
 
 function love.draw()
-    if State == STATE_ENUM.GAME then
-        Bird.draw()
-        Obstacles.draw()
-        love.graphics.setFont(love.graphics.newFont(50))
-        love.graphics.setColor(254, 254, 254)
-        love.graphics.print(Bird.point, 1920 / 2 - 25, 10)
-        love.graphics.setColor(255, 255, 255)
-    elseif State == STATE_ENUM.MENU then
-        Menu.draw()
-    end
+	if key == "escape" then
+		love.event.quit()
+	end
+	love.graphics.draw(college, 0, 0)
+	love.graphics.draw(crampte, cramptePos.x, cramptePos.y)
+
+	for type, current in ipairs(iphones_pos) do
+			love.graphics.draw(iphone, current.x, current.y)
+	end
+
 end
